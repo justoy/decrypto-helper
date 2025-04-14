@@ -46,7 +46,7 @@ export default function SecretWords({ onWordsGenerated }: SecretWordsProps) {
       
       {words.length === 0 && (
         <p className="text-gray-500 dark:text-gray-400 italic">
-          Click the button to generate your team's secret words.
+          Click the button to generate your team&apos;s secret words.
         </p>
       )}
     </div>

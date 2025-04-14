@@ -76,13 +76,13 @@ Output only the digits, nothing else.
       </div>
 
       <div>
-        <h3 className="text-lg font-bold mb-2">AI's Guess for Your Code:</h3>
+        <h3 className="text-lg font-bold mb-2">AI&apos;s Guess for Your Code:</h3>
         <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg min-h-16 flex items-center justify-center">
           {aiGuess ? (
             <p className="text-xl font-mono">{aiGuess}</p>
           ) : (
             <p className="text-gray-500 dark:text-gray-400 italic">
-              Enter hints above and click the button to get AI's guess
+              Enter hints above and click the button to get AI&apos;s guess
             </p>
           )}
         </div>
