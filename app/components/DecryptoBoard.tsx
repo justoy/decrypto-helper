@@ -161,7 +161,7 @@ export default function DecryptoBoard() {
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
         Our Rounds (Hints + Code)
       </h2>
-      <table className="w-full mb-8 border-collapse">
+      <table className="w-full mb-8 border-collapse bg-blue-50">
         <thead>
           <tr className="border-b-2 border-gray-400">
             <th className="px-2 py-1">Round</th>
@@ -187,7 +187,7 @@ export default function DecryptoBoard() {
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
         Opponent Rounds (Hints + Code)
       </h2>
-      <table className="w-full mb-8 border-collapse">
+      <table className="w-full mb-8 border-collapse bg-red-50">
         <thead>
           <tr className="border-b-2 border-gray-400">
             <th className="px-2 py-1">Round</th>
@@ -213,7 +213,7 @@ export default function DecryptoBoard() {
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
         Hints by Secret Word Number (Opponent)
       </h2>
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse bg-red-50">
         <thead>
           <tr className="border-b-2 border-gray-400">
             <th className="px-2 py-1">Round</th>
