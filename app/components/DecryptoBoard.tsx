@@ -6,7 +6,12 @@ interface RoundData {
   code: string; // e.g. "4,1,2"
 }
 
-/** Renders a single row in the first table: Round #, 3 hints, code. */
+// Helper to check if a row is empty
+function isRowEmpty(row: RoundData): boolean {
+  return row.hints.every(hint => hint.trim() === "") && row.code.trim() === "";
+}
+
+/** Renders a single row in the rounds table: Round #, 3 hints, code. */
 function RoundRow({
   roundIndex,
   roundData,
@@ -51,19 +56,22 @@ function RoundRow({
 }
 
 /**
- * Main Decrypto board with:
- * - First table: 8 rounds, each has 3 hints + code
- * - Second table: groups the 3 hints from each round by the code digit.
+ * Main Decrypto board with separate tables for our rounds, opponent's rounds, and:
+ * - Our Rounds Table: dynamically increasing rows with 3 hints + code
+ * - Opponent Rounds Table: dynamically increasing rows with 3 hints + code
+ * - Second table: Groups the opponent team's hints from each round by the code digit.
  */
 export default function DecryptoBoard() {
-  const [rounds, setRounds] = useState<RoundData[]>(
-    Array.from({ length: 8 }, () => ({
-      hints: ["", "", ""],
-      code: "",
-    }))
-  );
+  // Initialize with one empty row for each table
+  const [rounds, setRounds] = useState<RoundData[]>([
+    { hints: ["", "", ""], code: "" }
+  ]);
 
-  /** Handle updates to hints or code for a specific round. */
+  const [ourRounds, setOurRounds] = useState<RoundData[]>([
+    { hints: ["", "", ""], code: "" }
+  ]);
+
+  /** Handle updates to hints or code for the opponent's rounds. */
   const handleRoundChange = (
     roundIndex: number,
     field: "hints" | "code",
@@ -76,33 +84,61 @@ export default function DecryptoBoard() {
       } else {
         updated[roundIndex].code = value as string;
       }
+
+      // If the changed row is the last one and now not empty, append a new empty row
+      if (roundIndex === updated.length - 1 && !isRowEmpty(updated[roundIndex])) {
+        updated.push({ hints: ["", "", ""], code: "" });
+      }
+      return updated;
+    });
+  };
+
+  /** Handle updates to hints or code for our team's rounds. */
+  const handleOurRoundChange = (
+    roundIndex: number,
+    field: "hints" | "code",
+    value: string | string[]
+  ) => {
+    setOurRounds((prev) => {
+      const updated = [...prev];
+      if (field === "hints") {
+        updated[roundIndex].hints = value as string[];
+      } else {
+        updated[roundIndex].code = value as string;
+      }
+
+      // If the changed row is the last one and now not empty, append a new empty row
+      if (roundIndex === updated.length - 1 && !isRowEmpty(updated[roundIndex])) {
+        updated.push({ hints: ["", "", ""], code: "" });
+      }
       return updated;
     });
   };
 
   /**
-   * The second table: For each round, parse the code (e.g. "4.1.2").
-   * Then we put each hint into the correct word‐number column (#1–#4).
+   * The second table: For each opponent round (except the last empty one), parse the code (e.g. "4,1,2"),
+   * and then put each hint into the correct word‐number column (#1–#4).
    */
   const renderSecondTableBody = () => {
-    return rounds.map((roundData, roundIndex) => {
+    // Exclude the last row if it is empty
+    const validRounds = rounds.filter(row => !isRowEmpty(row));
+    return validRounds.map((roundData, roundIndex) => {
       // Each row has up to 4 columns for word #1, #2, #3, #4
-      // Start them all empty:
       const wordSlots = ["", "", "", ""];
 
-      // Parse the code "4.1.2" => ["4", "1", "2"]
+      // Parse the code "4,1,2" => ["4", "1", "2"]
       const codeDigits = roundData.code
         .split(",")
         .map((part) => parseInt(part.trim(), 10))
         .filter((num) => !isNaN(num) && num >= 1 && num <= 4);
 
-      // For each digit in the code, place the corresponding hint.
+      // For each digit in the code, place the corresponding hint:
       //   codeDigits[i] => which word number (1-based)
       //   roundData.hints[i] => the i-th hint
       codeDigits.forEach((digit, i) => {
         if (i < roundData.hints.length) {
-          // digit is 1-based, so digit=4 => index 3
-          const slotIndex = digit - 1; 
+          // digit is 1-based, so digit=4 corresponds to index 3
+          const slotIndex = digit - 1;
           wordSlots[slotIndex] = roundData.hints[i];
         }
       });
@@ -121,9 +157,35 @@ export default function DecryptoBoard() {
 
   return (
     <div className="p-4 border border-gray-200 rounded-md shadow-sm bg-white dark:bg-gray-800">
-      {/* FIRST TABLE */}
+      {/* Our Rounds Table (New) */}
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
-        Decrypto Rounds (Hints + Code)
+        Our Rounds (Hints + Code)
+      </h2>
+      <table className="w-full mb-8 border-collapse">
+        <thead>
+          <tr className="border-b-2 border-gray-400">
+            <th className="px-2 py-1">Round</th>
+            <th className="px-2 py-1">Hint 1</th>
+            <th className="px-2 py-1">Hint 2</th>
+            <th className="px-2 py-1">Hint 3</th>
+            <th className="px-2 py-1">Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ourRounds.map((roundData, idx) => (
+            <RoundRow
+              key={idx}
+              roundIndex={idx}
+              roundData={roundData}
+              onChange={(field, value) => handleOurRoundChange(idx, field, value)}
+            />
+          ))}
+        </tbody>
+      </table>
+
+      {/* Opponent's Rounds Table */}
+      <h2 className="text-xl font-semibold mb-4 dark:text-white">
+        Opponent Rounds (Hints + Code)
       </h2>
       <table className="w-full mb-8 border-collapse">
         <thead>
@@ -147,9 +209,9 @@ export default function DecryptoBoard() {
         </tbody>
       </table>
 
-      {/* SECOND TABLE */}
+      {/* Second Table: Hints by Secret Word Number for Opponent */}
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
-        Hints by Secret Word Number
+        Hints by Secret Word Number (Opponent)
       </h2>
       <table className="w-full border-collapse">
         <thead>
