@@ -5,6 +5,7 @@ import ApiKeyInput from "./components/ApiKeyInput";
 import SecretWords from "./components/SecretWords";
 import CodeGenerator from "./components/CodeGenerator";
 import HintInput from "./components/HintInput";
+import DecryptoBoard from "./components/DecryptoBoard";
 
 export default function Home() {
   const [secretWords, setSecretWords] = useState<string[]>([]);
@@ -25,12 +26,10 @@ export default function Home() {
       <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
           <ApiKeyInput />
-          
           <SecretWords onWordsGenerated={setSecretWords} />
-          
           <CodeGenerator />
-          
           <HintInput secretWords={secretWords} />
+          <DecryptoBoard />
         </div>
       </main>
 
@@ -40,9 +39,9 @@ export default function Home() {
             Built with Next.js and Tailwind CSS. Ready for deployment on Vercel.
           </p>
           <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-1">
-            <a 
-              href="https://github.com/yourusername/decrypto-helper" 
-              target="_blank" 
+            <a
+              href="https://github.com/yourusername/decrypto-helper"
+              target="_blank"
               rel="noopener noreferrer"
               className="hover:text-blue-500 transition-colors"
             >
