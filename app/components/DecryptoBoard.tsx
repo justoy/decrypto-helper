@@ -29,23 +29,23 @@ function RoundRow({
   };
 
   return (
-    <tr className="border-b border-gray-300">
-      <td className="px-2 py-1 text-center">{roundIndex + 1}</td>
+    <tr className="border-b border-slate-200 dark:border-slate-700">
+      <td className="px-3 py-2 text-center">{roundIndex + 1}</td>
       {roundData.hints.map((hint, i) => (
-        <td key={i} className="px-2 py-1">
+        <td key={i} className="px-3 py-2">
           <input
             type="text"
-            className="border rounded w-full p-1"
+            className="border rounded w-full p-1 bg-white dark:bg-gray-700 text-slate-900 dark:text-slate-100 border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400"
             value={hint}
             onChange={(e) => handleHintChange(i, e.target.value)}
             placeholder={`Hint ${i + 1}`}
           />
         </td>
       ))}
-      <td className="px-2 py-1">
+      <td className="px-3 py-2">
         <input
           type="text"
-          className="border rounded w-full p-1"
+          className="border rounded w-full p-1 bg-white dark:bg-gray-700 text-slate-900 dark:text-slate-100 border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400"
           value={roundData.code}
           onChange={(e) => onChange("code", e.target.value)}
           placeholder="Code (e.g. 4,1,2)"
@@ -89,8 +89,6 @@ export default function DecryptoBoard({ currentCode = [], currentHints = [] }: D
       } else {
         updated[roundIndex].code = value as string;
       }
-
-      // If the changed row is the last one and now not empty, append a new empty row
       if (roundIndex === updated.length - 1 && !isRowEmpty(updated[roundIndex])) {
         updated.push({ hints: ["", "", ""], code: "" });
       }
@@ -111,8 +109,6 @@ export default function DecryptoBoard({ currentCode = [], currentHints = [] }: D
       } else {
         updated[roundIndex].code = value as string;
       }
-
-      // If the changed row is the last one and now not empty, append a new empty row
       if (roundIndex === updated.length - 1 && !isRowEmpty(updated[roundIndex])) {
         updated.push({ hints: ["", "", ""], code: "" });
       }
@@ -122,20 +118,16 @@ export default function DecryptoBoard({ currentCode = [], currentHints = [] }: D
 
   /** Add a new round to ourRounds using currentHints and currentCode */
   const handleAddOurRound = () => {
-    // Pad hints to 3
     const hints = [...currentHints];
     while (hints.length < 3) hints.push("");
-    // Format code as "4,1,2"
     const codeStr = currentCode.join(",");
     setOurRounds((prev) => {
-      // If the last row is empty, replace it; else, add a new row
       const updated = [...prev];
       if (updated.length > 0 && isRowEmpty(updated[updated.length - 1])) {
         updated[updated.length - 1] = { hints, code: codeStr };
       } else {
         updated.push({ hints, code: codeStr });
       }
-      // Always add a new empty row at the end
       updated.push({ hints: ["", "", ""], code: "" });
       return updated;
     });
@@ -152,36 +144,26 @@ export default function DecryptoBoard({ currentCode = [], currentHints = [] }: D
    * and then put each hint into the correct word‐number column (#1–#4).
    */
   const renderSecondTableBody = () => {
-    // Exclude the last row if it is empty
     const validRounds = rounds.filter(row => !isRowEmpty(row));
     return validRounds.map((roundData, roundIndex) => {
-      // Each row has up to 4 columns for word #1, #2, #3, #4
       const wordSlots = ["", "", "", ""];
-
-      // Parse the code "4,1,2" => ["4", "1", "2"]
       const codeDigits = roundData.code
         .split(",")
         .map((part) => parseInt(part.trim(), 10))
         .filter((num) => !isNaN(num) && num >= 1 && num <= 4);
-
-      // For each digit in the code, place the corresponding hint:
-      //   codeDigits[i] => which word number (1-based)
-      //   roundData.hints[i] => the i-th hint
       codeDigits.forEach((digit, i) => {
         if (i < roundData.hints.length) {
-          // digit is 1-based, so digit=4 corresponds to index 3
           const slotIndex = digit - 1;
           wordSlots[slotIndex] = roundData.hints[i];
         }
       });
-
       return (
-        <tr key={roundIndex} className="border-b border-gray-300">
-          <td className="px-2 py-1 text-center">{roundIndex + 1}</td>
-          <td className="px-2 py-1">{wordSlots[0]}</td>
-          <td className="px-2 py-1">{wordSlots[1]}</td>
-          <td className="px-2 py-1">{wordSlots[2]}</td>
-          <td className="px-2 py-1">{wordSlots[3]}</td>
+        <tr key={roundIndex} className="border-b border-slate-200 dark:border-slate-700">
+          <td className="px-3 py-2 text-center">{roundIndex + 1}</td>
+          <td className="px-3 py-2">{wordSlots[0]}</td>
+          <td className="px-3 py-2">{wordSlots[1]}</td>
+          <td className="px-3 py-2">{wordSlots[2]}</td>
+          <td className="px-3 py-2">{wordSlots[3]}</td>
         </tr>
       );
     });
@@ -195,59 +177,50 @@ export default function DecryptoBoard({ currentCode = [], currentHints = [] }: D
     const validRounds = ourRounds.filter(row => !isRowEmpty(row));
     return validRounds.map((roundData, roundIndex) => {
       const wordSlots = ["", "", "", ""];
-
       const codeDigits = roundData.code
         .split(",")
         .map((part) => parseInt(part.trim(), 10))
         .filter((num) => !isNaN(num) && num >= 1 && num <= 4);
-
       codeDigits.forEach((digit, i) => {
         if (i < roundData.hints.length) {
           const slotIndex = digit - 1;
           wordSlots[slotIndex] = roundData.hints[i];
         }
       });
-
       return (
-        <tr key={roundIndex} className="border-b border-gray-300">
-          <td className="px-2 py-1 text-center">{roundIndex + 1}</td>
-          <td className="px-2 py-1">{wordSlots[0]}</td>
-          <td className="px-2 py-1">{wordSlots[1]}</td>
-          <td className="px-2 py-1">{wordSlots[2]}</td>
-          <td className="px-2 py-1">{wordSlots[3]}</td>
+        <tr key={roundIndex} className="border-b border-slate-200 dark:border-slate-700">
+          <td className="px-3 py-2 text-center">{roundIndex + 1}</td>
+          <td className="px-3 py-2">{wordSlots[0]}</td>
+          <td className="px-3 py-2">{wordSlots[1]}</td>
+          <td className="px-3 py-2">{wordSlots[2]}</td>
+          <td className="px-3 py-2">{wordSlots[3]}</td>
         </tr>
       );
     });
   };
 
   return (
-    <div className="p-4 border border-gray-200 rounded-md shadow-sm bg-white dark:bg-gray-800">
-      {/* Our Rounds Table (New) */}
-      <h2 className="text-xl font-semibold mb-4 dark:text-white">
-        Our Rounds (Hints + Code)
-      </h2>
+    <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-md shadow-sm bg-white dark:bg-gray-900">
+      {/* Our Rounds Table */}
+      <h2 className="text-xl font-semibold mb-4 dark:text-slate-100">Our Rounds (Hints + Code)</h2>
       <button
-        className={`mb-2 px-4 py-2 rounded font-medium ${
-          canAddOurRound
-            ? "bg-blue-500 hover:bg-blue-600 text-white"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-        }`}
+        className={`mb-4 px-4 py-2 rounded font-medium ${canAddOurRound ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-slate-300 text-slate-500 cursor-not-allowed"}`}
         onClick={handleAddOurRound}
         disabled={!canAddOurRound}
       >
         Fill Current Round Hints and Code
       </button>
-      <table className="w-full mb-8 border-collapse bg-blue-50">
-        <thead>
-          <tr className="border-b-2 border-gray-400">
-            <th className="px-2 py-1">Round</th>
-            <th className="px-2 py-1">Hint 1</th>
-            <th className="px-2 py-1">Hint 2</th>
-            <th className="px-2 py-1">Hint 3</th>
-            <th className="px-2 py-1">Code</th>
+      <table className="w-full mb-8 rounded-lg shadow-md bg-sky-50 dark:bg-sky-900">
+        <thead className="bg-sky-100 dark:bg-sky-800">
+          <tr className="divide-x divide-slate-200 dark:divide-slate-700">
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Round</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Hint 1</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Hint 2</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Hint 3</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Code</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
           {ourRounds.map((roundData, idx) => (
             <RoundRow
               key={idx}
@@ -260,40 +233,37 @@ export default function DecryptoBoard({ currentCode = [], currentHints = [] }: D
       </table>
 
       {/* Our Hints by Secret Word Number Table */}
-      <h2 className="text-xl font-semibold mb-4 dark:text-white">
-        Our Hints by Secret Word Number
-      </h2>
-      <table className="w-full border-collapse bg-blue-50 mb-8">
-        <thead>
-          <tr className="border-b-2 border-gray-400">
-            <th className="px-2 py-1">Round</th>
-            <th className="px-2 py-1">Word #1</th>
-            <th className="px-2 py-1">Word #2</th>
-            <th className="px-2 py-1">Word #3</th>
-            <th className="px-2 py-1">Word #4</th>
+      <h2 className="text-xl font-semibold mb-4 dark:text-slate-100">Our Hints by Secret Word Number</h2>
+      <table className="w-full mb-8 rounded-lg shadow-md bg-sky-50 dark:bg-sky-900">
+        <thead className="bg-sky-100 dark:bg-sky-800">
+          <tr className="divide-x divide-slate-200 dark:divide-slate-700">
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Round</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Word #1</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Word #2</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Word #3</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Word #4</th>
           </tr>
         </thead>
-        <tbody>{renderOurHintsByWordTableBody()}</tbody>
+        <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          {renderOurHintsByWordTableBody()}
+        </tbody>
       </table>
 
-      {/* Separator between our team and opponent team tables */}
-      <div className="my-8 border-t-4 border-gray-600 dark:border-gray-300" />
+      <div className="my-8 border-t border-slate-300 dark:border-slate-600" />
 
       {/* Opponent's Rounds Table */}
-      <h2 className="text-xl font-semibold mb-4 dark:text-white">
-        Opponent Rounds (Hints + Code)
-      </h2>
-      <table className="w-full mb-8 border-collapse bg-red-50">
-        <thead>
-          <tr className="border-b-2 border-gray-400">
-            <th className="px-2 py-1">Round</th>
-            <th className="px-2 py-1">Hint 1</th>
-            <th className="px-2 py-1">Hint 2</th>
-            <th className="px-2 py-1">Hint 3</th>
-            <th className="px-2 py-1">Code</th>
+      <h2 className="text-xl font-semibold mb-4 dark:text-slate-100">Opponent Rounds (Hints + Code)</h2>
+      <table className="w-full mb-8 rounded-lg shadow-md bg-rose-50 dark:bg-rose-900">
+        <thead className="bg-rose-100 dark:bg-rose-800">
+          <tr className="divide-x divide-slate-200 dark:divide-slate-700">
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Round</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Hint 1</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Hint 2</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Hint 3</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Code</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
           {rounds.map((roundData, idx) => (
             <RoundRow
               key={idx}
@@ -306,20 +276,20 @@ export default function DecryptoBoard({ currentCode = [], currentHints = [] }: D
       </table>
 
       {/* Hints by Secret Word Number (Opponent) Table */}
-      <h2 className="text-xl font-semibold mb-4 dark:text-white">
-        Hints by Secret Word Number (Opponent)
-      </h2>
-      <table className="w-full border-collapse bg-red-50">
-        <thead>
-          <tr className="border-b-2 border-gray-400">
-            <th className="px-2 py-1">Round</th>
-            <th className="px-2 py-1">Word #1</th>
-            <th className="px-2 py-1">Word #2</th>
-            <th className="px-2 py-1">Word #3</th>
-            <th className="px-2 py-1">Word #4</th>
+      <h2 className="text-xl font-semibold mb-4 dark:text-slate-100">Hints by Secret Word Number (Opponent)</h2>
+      <table className="w-full rounded-lg shadow-md bg-rose-50 dark:bg-rose-900">
+        <thead className="bg-rose-100 dark:bg-rose-800">
+          <tr className="divide-x divide-slate-200 dark:divide-slate-700">
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Round</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Word #1</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Word #2</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Word #3</th>
+            <th className="px-4 py-2 text-left text-slate-700 dark:text-slate-300 font-medium">Word #4</th>
           </tr>
         </thead>
-        <tbody>{renderSecondTableBody()}</tbody>
+        <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          {renderSecondTableBody()}
+        </tbody>
       </table>
     </div>
   );
