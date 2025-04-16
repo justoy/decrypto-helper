@@ -61,7 +61,12 @@ function RoundRow({
  * - Opponent Rounds Table: dynamically increasing rows with 3 hints + code
  * - Second table: Groups the opponent team's hints from each round by the code digit.
  */
-export default function DecryptoBoard() {
+interface DecryptoBoardProps {
+  currentCode?: number[];
+  currentHints?: string[];
+}
+
+export default function DecryptoBoard({ currentCode = [], currentHints = [] }: DecryptoBoardProps) {
   // Initialize with one empty row for each table
   const [rounds, setRounds] = useState<RoundData[]>([
     { hints: ["", "", ""], code: "" }
@@ -114,6 +119,33 @@ export default function DecryptoBoard() {
       return updated;
     });
   };
+
+  /** Add a new round to ourRounds using currentHints and currentCode */
+  const handleAddOurRound = () => {
+    // Pad hints to 3
+    const hints = [...currentHints];
+    while (hints.length < 3) hints.push("");
+    // Format code as "4,1,2"
+    const codeStr = currentCode.join(",");
+    setOurRounds((prev) => {
+      // If the last row is empty, replace it; else, add a new row
+      const updated = [...prev];
+      if (updated.length > 0 && isRowEmpty(updated[updated.length - 1])) {
+        updated[updated.length - 1] = { hints, code: codeStr };
+      } else {
+        updated.push({ hints, code: codeStr });
+      }
+      // Always add a new empty row at the end
+      updated.push({ hints: ["", "", ""], code: "" });
+      return updated;
+    });
+  };
+
+  const canAddOurRound =
+    currentHints.length === 3 &&
+    currentHints.every((h) => h.trim().length > 0) &&
+    currentCode.length === 3 &&
+    currentCode.every((n) => typeof n === "number" && n >= 1 && n <= 4);
 
   /**
    * The second table: For each opponent round (except the last empty one), parse the code (e.g. "4,1,2"),
@@ -194,6 +226,17 @@ export default function DecryptoBoard() {
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
         Our Rounds (Hints + Code)
       </h2>
+      <button
+        className={`mb-2 px-4 py-2 rounded font-medium ${
+          canAddOurRound
+            ? "bg-blue-500 hover:bg-blue-600 text-white"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+        }`}
+        onClick={handleAddOurRound}
+        disabled={!canAddOurRound}
+      >
+        Fill Current Round Hints and Code
+      </button>
       <table className="w-full mb-8 border-collapse bg-blue-50">
         <thead>
           <tr className="border-b-2 border-gray-400">

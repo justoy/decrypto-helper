@@ -5,9 +5,10 @@ import { callOpenAI } from "../utils/openai";
 
 interface HintInputProps {
   secretWords: string[];
+  onHintsChange?: (hints: string[]) => void;
 }
 
-export default function HintInput({ secretWords }: HintInputProps) {
+export default function HintInput({ secretWords, onHintsChange }: HintInputProps) {
   const [hints, setHints] = useState("");
   const [aiGuess, setAiGuess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +63,17 @@ Output only the digits, nothing else.
           id="hintsInput"
           type="text"
           value={hints}
-          onChange={(e) => setHints(e.target.value)}
+          onChange={(e) => {
+            setHints(e.target.value);
+            if (onHintsChange) {
+              // Split by comma, trim whitespace
+              const hintsArr = e.target.value
+                .split(",")
+                .map((h) => h.trim())
+                .filter((h) => h.length > 0);
+              onHintsChange(hintsArr);
+            }
+          }}
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
           placeholder="e.g. ocean, running, night"
         />

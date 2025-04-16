@@ -9,6 +9,8 @@ import DecryptoBoard from "./components/DecryptoBoard";
 
 export default function Home() {
   const [secretWords, setSecretWords] = useState<string[]>([]);
+  const [currentCode, setCurrentCode] = useState<number[]>([]);
+  const [currentHints, setCurrentHints] = useState<string[]>([]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -27,9 +29,15 @@ export default function Home() {
         <div className="space-y-6">
           <ApiKeyInput />
           <SecretWords onWordsGenerated={setSecretWords} />
-          <CodeGenerator />
-          <HintInput secretWords={secretWords} />
-          <DecryptoBoard />
+          <CodeGenerator onCodeGenerated={(code) => setCurrentCode(code)} />
+          <HintInput
+            secretWords={secretWords}
+            onHintsChange={(hints) => setCurrentHints(hints)}
+          />
+          <DecryptoBoard
+            currentCode={currentCode}
+            currentHints={currentHints}
+          />
         </div>
       </main>
 
