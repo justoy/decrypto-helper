@@ -233,6 +233,9 @@ export default function DecryptoBoard() {
         <tbody>{renderOurHintsByWordTableBody()}</tbody>
       </table>
 
+      {/* Separator between our team and opponent team tables */}
+      <div className="my-8 border-t-4 border-gray-600 dark:border-gray-300" />
+
       {/* Opponent's Rounds Table */}
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
         Opponent Rounds (Hints + Code)
