@@ -43,7 +43,7 @@ Output only the digits, nothing else.
       `.trim();
 
       const guess = await callOpenAI(prompt);
-      setAiGuess(guess || "[No guess returned]");
+      setAiGuess(guess || "[Guessing]");
     } catch (error) {
       console.error("Error getting AI guess:", error);
       setAiGuess("Error occurred while getting AI guess");

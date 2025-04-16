@@ -20,10 +20,8 @@ export async function callOpenAI(promptText: string): Promise<string> {
         "Authorization": `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "o3-mini",
         messages: [{ role: "user", content: promptText }],
-        max_tokens: 100,
-        temperature: 0.8
       })
     });
 
