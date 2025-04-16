@@ -155,6 +155,39 @@ export default function DecryptoBoard() {
     });
   };
 
+  /**
+   * The third table: For each of our rounds (except the last empty one), parse the code (e.g. "4,1,2"),
+   * and then put each hint into the correct word‐number column (#1–#4).
+   */
+  const renderOurHintsByWordTableBody = () => {
+    const validRounds = ourRounds.filter(row => !isRowEmpty(row));
+    return validRounds.map((roundData, roundIndex) => {
+      const wordSlots = ["", "", "", ""];
+
+      const codeDigits = roundData.code
+        .split(",")
+        .map((part) => parseInt(part.trim(), 10))
+        .filter((num) => !isNaN(num) && num >= 1 && num <= 4);
+
+      codeDigits.forEach((digit, i) => {
+        if (i < roundData.hints.length) {
+          const slotIndex = digit - 1;
+          wordSlots[slotIndex] = roundData.hints[i];
+        }
+      });
+
+      return (
+        <tr key={roundIndex} className="border-b border-gray-300">
+          <td className="px-2 py-1 text-center">{roundIndex + 1}</td>
+          <td className="px-2 py-1">{wordSlots[0]}</td>
+          <td className="px-2 py-1">{wordSlots[1]}</td>
+          <td className="px-2 py-1">{wordSlots[2]}</td>
+          <td className="px-2 py-1">{wordSlots[3]}</td>
+        </tr>
+      );
+    });
+  };
+
   return (
     <div className="p-4 border border-gray-200 rounded-md shadow-sm bg-white dark:bg-gray-800">
       {/* Our Rounds Table (New) */}
@@ -183,6 +216,23 @@ export default function DecryptoBoard() {
         </tbody>
       </table>
 
+      {/* Our Hints by Secret Word Number Table */}
+      <h2 className="text-xl font-semibold mb-4 dark:text-white">
+        Our Hints by Secret Word Number
+      </h2>
+      <table className="w-full border-collapse bg-blue-50 mb-8">
+        <thead>
+          <tr className="border-b-2 border-gray-400">
+            <th className="px-2 py-1">Round</th>
+            <th className="px-2 py-1">Word #1</th>
+            <th className="px-2 py-1">Word #2</th>
+            <th className="px-2 py-1">Word #3</th>
+            <th className="px-2 py-1">Word #4</th>
+          </tr>
+        </thead>
+        <tbody>{renderOurHintsByWordTableBody()}</tbody>
+      </table>
+
       {/* Opponent's Rounds Table */}
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
         Opponent Rounds (Hints + Code)
@@ -209,7 +259,7 @@ export default function DecryptoBoard() {
         </tbody>
       </table>
 
-      {/* Second Table: Hints by Secret Word Number for Opponent */}
+      {/* Hints by Secret Word Number (Opponent) Table */}
       <h2 className="text-xl font-semibold mb-4 dark:text-white">
         Hints by Secret Word Number (Opponent)
       </h2>
