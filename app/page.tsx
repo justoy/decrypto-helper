@@ -48,7 +48,7 @@ export default function Home() {
           </p>
           <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-1">
             <a
-              href="https://github.com/yourusername/decrypto-helper"
+              href="https://github.com/justoy/decrypto-helper"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-blue-500 transition-colors"
